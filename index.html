@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CO-PILOT HUD GENERATOR v3.1 - CUSTOM EDITION</title>
+    <title>CO-PILOT HUD GENERATOR v3.4 - KO-FI WIDGET EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -298,6 +298,37 @@
             text-align: center;
             text-transform: uppercase;
         }
+
+        /* --- SUPPORT LINK BLOCK --- */
+        .support-container {
+            width: 850px;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        .kofi-terminal-btn {
+            color: #00ffaa;
+            border: 1px solid #00ffaa;
+            background: rgba(0, 255, 170, 0.05);
+            text-decoration: none;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            padding: 6px 16px;
+            letter-spacing: 1px;
+            transition: 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 255, 170, 0.2);
+        }
+        .kofi-terminal-btn:hover {
+            background-color: rgba(0, 255, 170, 0.2);
+            color: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 12px rgba(0, 255, 170, 0.6);
+        }
         
         .glow { text-shadow: 0 0 5px rgba(255, 119, 0, 0.5); }
     </style>
@@ -431,6 +462,13 @@
     </div>
 </div>
 
+<!-- BOTTOM RIGHT KO-FI TERMINAL BUTTON -->
+<div class="support-container">
+    <a href="https://ko-fi.com/eliasvancethorne" target="_blank" class="kofi-terminal-btn">
+        [ ☕ TRANSMIT_FUEL_RESERVES ]
+    </a>
+</div>
+
 <script>
     function hueToHex(hue) {
         const f = (n, k = (n + hue / 30) % 12) => .5 - .5 * Math.max(Math.min(k - 3, 9 - k, 1), -1);
@@ -462,8 +500,7 @@
             el.style.color = color;
             el.style.textShadow = `0 0 8px ${color}66`;
         } else if (targetKey === 'status') {
-            const el = document.getElementById('live-stardate');
-            el.style.color = color;
+            document.getElementById('live-stardate').style.color = color;
         } else if (targetKey === 'bodyText') {
             const el = document.getElementById('live-content');
             el.style.color = color;
@@ -568,6 +605,17 @@
     }, 350);
 
     updateAllDynamicData();
+</script>
+
+<!-- WIDGET OVERLAY RECON KO-FI -->
+<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+<script>
+  kofiWidgetOverlay.draw('eliasvancethorne', {
+    'type': 'floating-chat',
+    'floating-chat.donateButton.text': 'Support me',
+    'floating-chat.donateButton.background-color': '#00b9fe',
+    'floating-chat.donateButton.text-color': '#fff'
+  });
 </script>
 </body>
 </html>
