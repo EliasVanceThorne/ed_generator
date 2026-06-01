@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CO-PILOT HUD GENERATOR v0.1</title>
+    <title>CO-PILOT HUD GENERATOR v1.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -19,6 +19,26 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+        }
+
+        /* --- BARRA CREDITI SUPERIORE IN INGLESE --- */
+        .creator-top-bar {
+            width: 850px;
+            background-color: #1a110a;
+            border: 1px dashed #ff7700;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            color: #ffaa00;
+            text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+        }
+        .creator-top-bar span {
+            color: #fff;
         }
 
         h2.generator-title {
@@ -299,13 +319,13 @@
             text-transform: uppercase;
         }
 
-        /* --- SUPPORT LINK BLOCK --- */
+        /* --- SUPPORT BLOCK --- */
         .support-container {
             width: 850px;
             display: flex;
             justify-content: flex-end;
-            margin-top: 15px;
-            margin-bottom: 30px;
+            margin-top: 20px;
+            margin-bottom: 40px;
         }
         .kofi-terminal-btn {
             color: #00ffaa;
@@ -334,6 +354,10 @@
     </style>
 </head>
 <body>
+
+<div class="creator-top-bar">
+    // MODULE_MAIN_ENG // DESIGNED AND CREATED BY: <span>ELIAS VANCE THORNE</span>
+</div>
 
 <h2 class="generator-title">CO-PILOT FLIGHT LOG GENERATOR (ORBITAL RADAR)</h2>
 
@@ -398,7 +422,6 @@
     <h3>Flight Data Input Panel</h3>
     
     <div style="display:flex; gap:20px;">
-        <!-- Top Left Header -->
         <div class="input-group" style="flex:1;">
             <label>Top Left Header:</label>
             <input type="text" id="inTopHeader" class="control-input" value="HUD REF: ENTER YOUR SHIP NAME OR ID HERE" oninput="updateAllDynamicData()">
@@ -408,7 +431,6 @@
             </div>
         </div>
 
-        <!-- Top Right Header -->
         <div class="input-group" style="flex:1;">
             <label>Top Right Header:</label>
             <input type="text" id="inTopRightHeader" class="control-input" value="AI OPERATOR ID" oninput="updateAllDynamicData()">
@@ -419,7 +441,6 @@
         </div>
     </div>
 
-    <!-- Log Identifier -->
     <div class="input-group">
         <label>Log Header / Title:</label>
         <input type="text" id="inTitle" class="control-input" value="MAIN LOG TITLE" oninput="updateAllDynamicData()">
@@ -430,7 +451,6 @@
     </div>
     
     <div style="display:flex; gap:20px;">
-        <!-- Star Date (Manual Input) -->
         <div class="input-group" style="flex:1">
             <label>Star Date:</label>
             <input type="text" id="inStarDate" class="control-input" value="0000.00" oninput="updateAllDynamicData()">
@@ -439,19 +459,16 @@
                 <input type="text" class="color-hex-input" value="#00AAFF" id="hex-status" oninput="handleHexChange(this, 'status')">
             </div>
         </div>
-        <!-- System / Station -->
         <div class="input-group" style="flex:1.5">
             <label>System / Station:</label>
             <input type="text" id="inLoc" class="control-input" value="SYSTEM OR STATION" oninput="updateAllDynamicData()">
         </div>
-        <!-- Log Entry -->
         <div class="input-group" style="flex:1">
             <label>Log Entry:</label>
             <input type="text" id="inNum" class="control-input" value="001" oninput="updateAllDynamicData()">
         </div>
     </div>
 
-    <!-- Main Live Text Input -->
     <div class="input-group">
         <label>Inject Body Text (Real-time Typing):</label>
         <textarea id="inText" class="control-input" rows="3" oninput="updateAllDynamicData()">YOUR CUSTOM LOG TEXT GOES HERE. CHOOSE YOUR RECON DATA, SYSTEM STATUS REPORTS, OR EMISSION SPECTRUM ANALYSES...</textarea>
@@ -462,7 +479,6 @@
     </div>
 </div>
 
-<!-- BOTTOM RIGHT KO-FI TERMINAL BUTTON -->
 <div class="support-container">
     <a href="https://ko-fi.com/eliasvancethorne" target="_blank" class="kofi-terminal-btn">
         [ ☕ TRANSMIT_FUEL_RESERVES ]
@@ -554,7 +570,6 @@
         });
     }
 
-    // --- RADAR CELESTIAL MAP ENGINE ---
     const radarContainer = document.getElementById('radarContainer');
     const centerX = 105; 
     const centerY = 25;  
@@ -589,7 +604,6 @@
     }
     setInterval(updateCelestialMap, 33);
 
-    // --- FLIGHT MATRIX ANIMATION ENGINE ---
     setInterval(() => {
         const sys = (Math.random() * (4.0 - 2.5) + 2.5).toFixed(1);
         const eng = (Math.random() * (3.5 - 1.0) + 1.0).toFixed(1);
@@ -607,7 +621,6 @@
     updateAllDynamicData();
 </script>
 
-<!-- WIDGET OVERLAY RECON KO-FI -->
 <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
 <script>
   kofiWidgetOverlay.draw('eliasvancethorne', {
