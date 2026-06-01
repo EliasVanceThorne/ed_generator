@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO-PILOT HUD GENERATOR v3.1 - CUSTOM EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body {
+            background-color: #0d0905;
+            color: #ff7700; 
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h2.generator-title {
+            color: #ff7700;
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255, 119, 0, 0.3);
+        }
+
+        .toolbar {
+            width: 850px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        .screenshot-btn {
+            background: none;
+            border: 1px solid #ff7700;
+            color: #ff7700;
+            padding: 6px 14px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .screenshot-btn:hover {
+            background-color: rgba(255, 119, 0, 0.2);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 119, 0, 0.5);
+        }
+
+        .screenshot-area {
+            width: 850px;
+            min-height: 450px;
+            background-color: #050301;
+            position: relative;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0,0,0,0.7);
+            border: 4px solid #24170c;
+            border-radius: 10px;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .screenshot-area::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(20, 10, 0, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            z-index: 10;
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .terminal-header {
+            border-bottom: 1px solid rgba(255, 119, 0, 0.5);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            line-height: 1;
+            color: #00aaff;
+        }
+
+        .main-display {
+            display: flex;
+            flex-direction: row;
+            gap: 25px;
+            align-items: stretch;
+            flex-grow: 1;
+        }
+
+        .left-column {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 540px;
+        }
+
+        .right-column {
+            width: 230px;
+            border-left: 1px dashed rgba(255, 119, 0, 0.25);
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .left-column h1 {
+            font-family: 'VT323', monospace;
+            font-size: 2.5rem;
+            color: #ff7700;
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 119, 0, 0.4);
+        }
+
+        .system-status {
+            background-color: rgba(255, 119, 0, 0.03);
+            border: 1px dashed rgba(255, 119, 0, 0.4);
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            color: #00aaff;
+        }
+
+        .post-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin: 0;
+            font-family: 'VT323', monospace;
+            color: #ff7700;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background-color: #ff7700;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+            box-shadow: 0 0 5px #ff7700;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .muthur-matrix-box {
+            border: 1px solid rgba(255, 119, 0, 0.3);
+            background: rgba(15, 8, 0, 0.4);
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            flex-shrink: 0;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 119, 0, 0.6);
+        }
+
+        .mini-tracker-container {
+            width: 210px;
+            height: 150px;
+            border: 1px solid rgba(255, 119, 0, 0.4);
+            background-color: rgba(10, 5, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            margin-top: auto;
+            box-sizing: border-box;
+        }
+
+        .radar-grid {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 90px;
+            border: 1.5px solid rgba(255, 119, 0, 0.5);
+            border-bottom: none;
+            border-radius: 90px 90px 0 0;
+        }
+
+        .radar-ring-mid {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 60px;
+            border: 1px dashed rgba(255, 119, 0, 0.3); border-bottom: none; border-radius: 60px 60px 0 0;
+        }
+        .radar-ring-inner {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 30px;
+            border: 1px dashed rgba(255, 119, 0, 0.2); border-bottom: none; border-radius: 30px 30px 0 0;
+        }
+        .axis-left { position: absolute; bottom: 0; left: 50%; width: 90px; height: 1px; background: rgba(255, 119, 0, 0.2); transform-origin: left center; transform: rotate(-45deg); }
+        .axis-center { position: absolute; bottom: 0; left: 50%; width: 90px; height: 1px; background: rgba(255, 119, 0, 0.3); transform-origin: left center; transform: rotate(-90deg); }
+        .axis-right { position: absolute; bottom: 0; left: 50%; width: 90px; height: 1px; background: rgba(255, 119, 0, 0.2); transform-origin: left center; transform: rotate(-135deg); }
+
+        .tracker-telemetry {
+            position: absolute; font-family: 'VT323', monospace; font-size: 0.85rem; color: rgba(255, 119, 0, 0.7); top: 5px; left: 8px; line-height: 1.1;
+        }
+        .mini-distance-display {
+            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: #ff7700; font-family: 'VT323', monospace; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 5px rgba(255, 119, 0, 0.8);
+        }
+
+        .radar-blip {
+            position: absolute; width: 6px; height: 6px; background-color: #ffaa00; border-radius: 50%; box-sizing: border-box; box-shadow: 0 0 8px #ff7700;
+            z-index: 4; transform: translate(-3px, 3px);
+        }
+
+        .terminal-footer {
+            margin-top: auto; display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255, 119, 0, 0.4); text-transform: uppercase; padding-top: 10px; border-top: 1px solid rgba(255, 119, 0, 0.15); flex-shrink: 0;
+        }
+
+        /* --- CONTROL PANEL --- */
+        .control-panel {
+            width: 850px; margin-top: 25px; background-color: #1a110a; border: 1px dashed #ff7700; padding: 20px; border-radius: 6px; box-sizing: border-box;
+        }
+        .control-panel h3 { margin-top: 0; color: #fff; font-family: 'VT323', monospace; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; color: #ff7700; margin-bottom: 5px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .control-input { width: 100%; background-color: #050301; border: 1px solid rgba(255, 119, 0, 0.5); color: #FFF; padding: 10px; font-family: 'Courier Prime', monospace; font-size: 1rem; border-radius: 3px; box-sizing: border-box; outline: none; }
+        .control-input:focus { border-color: #ff7700; box-shadow: 0 0 8px rgba(255, 119, 0, 0.3); }
+        
+        /* SLIDER & COLOR SUBROW SYSTEM */
+        .color-picker-subrow {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 6px;
+            background: rgba(0,0,0,0.2);
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        .color-slider {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+            outline: none;
+            cursor: pointer;
+        }
+        .color-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #000;
+            cursor: pointer;
+        }
+        .color-hex-input {
+            width: 85px;
+            background: #000;
+            border: 1px solid #555;
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.8rem;
+            padding: 3px 5px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        .glow { text-shadow: 0 0 5px rgba(255, 119, 0, 0.5); }
+    </style>
+</head>
+<body>
+
+<h2 class="generator-title">CO-PILOT FLIGHT LOG GENERATOR (ORBITAL RADAR)</h2>
+
+<div class="toolbar">
+    <button class="screenshot-btn" onclick="takeSnapshot()">
+        [ COM_NET_CAPTURE ]
+    </button>
+</div>
+
+<div class="screenshot-area" id="nostromoBox">
+    <div class="terminal-header">
+        <div id="live-top-header">HUD REF: ENTER YOUR SHIP NAME OR ID HERE</div>
+        <div id="live-top-right-header" class="logo">AI OPERATOR ID</div>
+    </div>
+
+    <div class="main-display">
+        <div class="left-column">
+            <h1 id="live-title" class="glow">MAIN LOG TITLE</h1>
+            
+            <div class="system-status glow">
+                <span id="live-stardate">0000.00 | SYSTEM OR STATION | 001</span>
+            </div>
+            
+            <p class="post-text glow" id="live-content"><span class="cursor"></span></p>
+        </div>
+
+        <div class="right-column">
+            <div class="muthur-matrix-box">
+                <div style="color: #ff7700; font-size: 0.65rem; margin-bottom: 4px; font-weight: bold;">FSD_DRIVE_GRID</div>
+                <div class="matrix-row"><span>SYS</span><span style="color: #00aaff;" id="val-sys">[4.0]</span></div>
+                <div class="matrix-row"><span>ENG</span><span style="color: #00aaff;" id="val-eng">[2.0]</span></div>
+                <div class="matrix-row"><span>WEP</span><span style="color: #00aaff;" id="val-wep">[0.0]</span></div>
+                <div class="matrix-row" style="color: #ff7700;"><span>ORBITS</span><span id="val-cargo">[3]</span></div>
+            </div>
+            
+            <div class="mini-tracker-container" id="radarContainer">
+                <div class="tracker-telemetry">
+                    ORBIT_SCAN<br>
+                    OBJECTS: <span id="obj-count">UNKNOWN</span>
+                </div>
+                <div class="radar-grid">
+                    <div class="radar-ring-mid"></div>
+                    <div class="radar-ring-inner"></div>
+                    <div class="axis-left"></div>
+                    <div class="axis-center"></div>
+                    <div class="axis-right"></div>
+                </div>
+                <div class="mini-distance-display">
+                    FSS_SCAN
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-footer">
+        <span>[SYSTEM MONITORING COMPLETED]</span>
+        <span>STATUS: SYSTEM_LIVE_MAP</span>
+    </div>
+</div>
+
+<div class="control-panel">
+    <h3>Flight Data Input Panel</h3>
+    
+    <div style="display:flex; gap:20px;">
+        <!-- Top Left Header -->
+        <div class="input-group" style="flex:1;">
+            <label>Top Left Header:</label>
+            <input type="text" id="inTopHeader" class="control-input" value="HUD REF: ENTER YOUR SHIP NAME OR ID HERE" oninput="updateAllDynamicData()">
+            <div class="color-picker-subrow">
+                <input type="range" class="color-slider" min="0" max="360" value="30" oninput="handleSliderChange(this, 'topHeader')">
+                <input type="text" class="color-hex-input" value="#FF7700" id="hex-topHeader" oninput="handleHexChange(this, 'topHeader')">
+            </div>
+        </div>
+
+        <!-- Top Right Header -->
+        <div class="input-group" style="flex:1;">
+            <label>Top Right Header:</label>
+            <input type="text" id="inTopRightHeader" class="control-input" value="AI OPERATOR ID" oninput="updateAllDynamicData()">
+            <div class="color-picker-subrow">
+                <input type="range" class="color-slider" min="0" max="360" value="200" oninput="handleSliderChange(this, 'topRightHeader')">
+                <input type="text" class="color-hex-input" value="#00AAFF" id="hex-topRightHeader" oninput="handleHexChange(this, 'topRightHeader')">
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Identifier -->
+    <div class="input-group">
+        <label>Log Header / Title:</label>
+        <input type="text" id="inTitle" class="control-input" value="MAIN LOG TITLE" oninput="updateAllDynamicData()">
+        <div class="color-picker-subrow">
+            <input type="range" class="color-slider" min="0" max="360" value="30" oninput="handleSliderChange(this, 'title')">
+            <input type="text" class="color-hex-input" value="#FF7700" id="hex-title" oninput="handleHexChange(this, 'title')">
+        </div>
+    </div>
+    
+    <div style="display:flex; gap:20px;">
+        <!-- Star Date (Manual Input) -->
+        <div class="input-group" style="flex:1">
+            <label>Star Date:</label>
+            <input type="text" id="inStarDate" class="control-input" value="0000.00" oninput="updateAllDynamicData()">
+            <div class="color-picker-subrow">
+                <input type="range" class="color-slider" min="0" max="360" value="200" oninput="handleSliderChange(this, 'status')">
+                <input type="text" class="color-hex-input" value="#00AAFF" id="hex-status" oninput="handleHexChange(this, 'status')">
+            </div>
+        </div>
+        <!-- System / Station -->
+        <div class="input-group" style="flex:1.5">
+            <label>System / Station:</label>
+            <input type="text" id="inLoc" class="control-input" value="SYSTEM OR STATION" oninput="updateAllDynamicData()">
+        </div>
+        <!-- Log Entry -->
+        <div class="input-group" style="flex:1">
+            <label>Log Entry:</label>
+            <input type="text" id="inNum" class="control-input" value="001" oninput="updateAllDynamicData()">
+        </div>
+    </div>
+
+    <!-- Main Live Text Input -->
+    <div class="input-group">
+        <label>Inject Body Text (Real-time Typing):</label>
+        <textarea id="inText" class="control-input" rows="3" oninput="updateAllDynamicData()">YOUR CUSTOM LOG TEXT GOES HERE. CHOOSE YOUR RECON DATA, SYSTEM STATUS REPORTS, OR EMISSION SPECTRUM ANALYSES...</textarea>
+        <div class="color-picker-subrow">
+            <input type="range" class="color-slider" min="0" max="360" value="30" oninput="handleSliderChange(this, 'bodyText')">
+            <input type="text" class="color-hex-input" value="#FF7700" id="hex-bodyText" oninput="handleHexChange(this, 'bodyText')">
+        </div>
+    </div>
+</div>
+
+<script>
+    function hueToHex(hue) {
+        const f = (n, k = (n + hue / 30) % 12) => .5 - .5 * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        const rgb = [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+        return "#" + rgb.map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    function handleSliderChange(sliderEl, targetKey) {
+        const hexColor = hueToHex(sliderEl.value);
+        document.getElementById(`hex-${targetKey}`).value = hexColor;
+        applyColorToHUD(targetKey, hexColor);
+    }
+
+    function handleHexChange(hexInputEl, targetKey) {
+        let val = hexInputEl.value;
+        if (!val.startsWith('#')) val = '#' + val;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+            applyColorToHUD(targetKey, val);
+        }
+    }
+
+    function applyColorToHUD(targetKey, color) {
+        if (targetKey === 'topHeader') {
+            document.getElementById('live-top-header').style.color = color;
+        } else if (targetKey === 'topRightHeader') {
+            document.getElementById('live-top-right-header').style.color = color;
+        } else if (targetKey === 'title') {
+            const el = document.getElementById('live-title');
+            el.style.color = color;
+            el.style.textShadow = `0 0 8px ${color}66`;
+        } else if (targetKey === 'status') {
+            const el = document.getElementById('live-stardate');
+            el.style.color = color;
+        } else if (targetKey === 'bodyText') {
+            const el = document.getElementById('live-content');
+            el.style.color = color;
+            const cursor = el.querySelector('.cursor');
+            if (cursor) {
+                cursor.style.backgroundColor = color;
+                cursor.style.boxShadow = `0 0 5px ${color}`;
+            }
+        }
+    }
+
+    function updateAllDynamicData() {
+        const topHeader = document.getElementById('inTopHeader').value;
+        const topRightHeader = document.getElementById('inTopRightHeader').value;
+        const starDate = document.getElementById('inStarDate').value;
+        const loc = document.getElementById('inLoc').value;
+        const num = document.getElementById('inNum').value;
+        const title = document.getElementById('inTitle').value;
+        const bodyText = document.getElementById('inText').value;
+        
+        document.getElementById('live-top-header').innerText = topHeader.toUpperCase();
+        document.getElementById('live-top-right-header').innerText = topRightHeader.toUpperCase();
+        document.getElementById('live-title').innerText = title.toUpperCase();
+        
+        document.getElementById('live-stardate').innerText = `${starDate.toUpperCase()} | ${loc.toUpperCase()} | ${num.toUpperCase()}`;
+        
+        const cleanBody = bodyText.replace(/\n/g, '<br>').toUpperCase();
+        document.getElementById('live-content').innerHTML = cleanBody + '<span class="cursor"></span>';
+        
+        const currentColor = document.getElementById('hex-bodyText').value;
+        const cursor = document.querySelector('.cursor');
+        if (cursor) {
+            cursor.style.backgroundColor = currentColor;
+            cursor.style.boxShadow = `0 0 5px ${currentColor}`;
+        }
+    }
+
+    function takeSnapshot() {
+        const target = document.getElementById('nostromoBox');
+        html2canvas(target, {
+            logging: false,
+            backgroundColor: '#050301',
+            useCORS: true,
+            scale: 2 
+        }).then(canvas => {
+            const image = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.download = 'elite_dangerous_custom_hud.png';
+            link.href = image;
+            link.click();
+        });
+    }
+
+    // --- RADAR CELESTIAL MAP ENGINE ---
+    const radarContainer = document.getElementById('radarContainer');
+    const centerX = 105; 
+    const centerY = 25;  
+
+    const spaceObjects = [
+        { id: 'obj1', radius: 30, speed: 0.04, angle: 0.2, color: '#ff4400' }, 
+        { id: 'obj2', radius: 60, speed: 0.02, angle: 1.5, color: '#ffaa00' }, 
+        { id: 'obj3', radius: 85, speed: 0.01, angle: 2.8, color: '#00aaff' }  
+    ];
+
+    spaceObjects.forEach(obj => {
+        const div = document.createElement('div');
+        div.id = obj.id;
+        div.className = 'radar-blip';
+        div.style.backgroundColor = obj.color;
+        div.style.boxShadow = `0 0 8px ${obj.color}`;
+        radarContainer.appendChild(div);
+    });
+
+    function updateCelestialMap() {
+        spaceObjects.forEach(obj => {
+            const el = document.getElementById(obj.id);
+            obj.angle += obj.speed;
+            if (obj.angle > Math.PI) obj.angle = 0; 
+
+            const currentX = centerX + obj.radius * Math.cos(obj.angle);
+            const currentY = centerY + obj.radius * Math.sin(obj.angle);
+
+            el.style.left = currentX + 'px';
+            el.style.bottom = currentY + 'px';
+        });
+    }
+    setInterval(updateCelestialMap, 33);
+
+    // --- FLIGHT MATRIX ANIMATION ENGINE ---
+    setInterval(() => {
+        const sys = (Math.random() * (4.0 - 2.5) + 2.5).toFixed(1);
+        const eng = (Math.random() * (3.5 - 1.0) + 1.0).toFixed(1);
+        const wep = (Math.random() * (2.0 - 0.0) + 0.0).toFixed(1);
+        
+        document.getElementById('val-sys').innerText = `[${sys}]`;
+        document.getElementById('val-eng').innerText = `[${eng}]`;
+        document.getElementById('val-wep').innerText = `[${wep}]`;
+
+        const cargoStatuses = ['[UPD]', '[MAP]', '[RUN]', '[03]', '[OK]'];
+        const randomStatus = cargoStatuses[Math.floor(Math.random() * cargoStatuses.length)];
+        document.getElementById('val-cargo').innerText = randomStatus;
+    }, 350);
+
+    updateAllDynamicData();
+</script>
+</body>
+</html>
